@@ -1,0 +1,27 @@
+APPLICATION_ID: app
+service_description:
+  name: service
+  version: 0.0.1
+
+servicecomb:
+  service:
+    registry:
+      address: http://127.0.0.1:30100   # register on local sc
+      instance:
+        watch: false
+  # config center
+  #  config:
+  #    client:
+  #      serverUri: https://cse.cn-north-1.myhwclouds.com:443
+  #      refreshMode: 1
+  #      refresh_interval: 15000
+  # monitor, only exists on cloud
+  monitor:
+    client:
+      enabled: false
+  #      serverUri: https://cse.cn-north-1.myhwclouds.com:443
+
+  rest:
+    address: 0.0.0.0:9093
+    servlet:
+      urlPattern: /*
