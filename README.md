@@ -2,7 +2,8 @@
 
 操作步骤参考本分支的commit记录。
 
-适用于SpringBoot 2.0.3.RELEASE - 2.0.8.RELEASE。
+升级 CSEJavaSDK 版本到 2.5.0 ，匹配支持 Spring-5.2.1.RELEASE 和 SpringBoot-2.2.1.RELEASE 。
+注意配置依赖的时候需要显式指定Spring的版本，详情见pom文件。
 
 参考资料：
 - [https://huaweicse.github.io/cse-java-chassis-doc/using-cse-in-spring-boot/using-cse-in-spring-boot.html](https://huaweicse.github.io/cse-java-chassis-doc/using-cse-in-spring-boot/using-cse-in-spring-boot.html)
