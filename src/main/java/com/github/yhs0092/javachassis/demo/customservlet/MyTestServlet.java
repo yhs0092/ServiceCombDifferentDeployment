@@ -1,23 +1,22 @@
 package com.github.yhs0092.javachassis.demo.customservlet;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import javax.ws.rs.core.Response.Status;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.servicecomb.common.rest.codec.AbstractRestObjectMapper;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@WebServlet(name = "testCustomServlet", urlPatterns = {"/testCustomServlet", "/testCustomServlet/*"})
-public class MyTestServlet extends HttpServlet {
-
-  private static final long serialVersionUID = -181025327532345174L;
+@RestSchema(schemaId = "person")
+@RequestMapping("/testCustomServlet/person")
+public class MyTestServlet {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MyTestServlet.class);
 
@@ -28,84 +27,37 @@ public class MyTestServlet extends HttpServlet {
     LOGGER.info("MyTestServlet constructed!");
   }
 
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    LOGGER.info("doGet is called, path = [{}]", req.getPathInfo());
-    if (isInvalidPath(req)) {
-      responseUnknownPath(req, resp);
-      return;
-    }
+  @GetMapping
+  public Person doGet(@RequestParam("name") String name) {
+    LOGGER.info("doGet is called, name = [{}]", name);
 
-    String name = req.getParameter("name");
     Person person = personManager.findPerson(name);
     if (null == person) {
-      responsePersonNotFound(resp, name);
-      return;
+      responsePersonNotFound(name);
     }
-    response(resp, 200, person);
+    return person;
   }
 
-  @Override
-  protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    LOGGER.info("doPut is called, path = [{}]", req.getPathInfo());
-    if (isInvalidPath(req)) {
-      responseUnknownPath(req, resp);
-      return;
-    }
-
-    Person person;
-    try {
-      person = getObjectMapper().readValue(req.getInputStream(), Person.class);
-    } catch (IOException e) {
-      response(resp, 400, new CommonResponse("failed to parse body: " + e.getMessage()));
-      return;
-    }
+  @PutMapping
+  public CommonResponse doPut(@RequestBody Person person) {
+    LOGGER.info("doPut is called, person = [{}]", person);
 
     personManager.addPerson(person);
-    response(resp, 200, new CommonResponse("OK"));
+    return new CommonResponse("OK");
   }
 
-  @Override
-  protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    LOGGER.info("doDelete is called, path = [{}]", req.getPathInfo());
-    if (isInvalidPath(req)) {
-      responseUnknownPath(req, resp);
-      return;
-    }
+  @DeleteMapping
+  public Person doDelete(@RequestParam("name") String name) {
+    LOGGER.info("doDelete is called, name = [{}]", name);
 
-    String name = req.getParameter("name");
     Person person = personManager.deletePerson(name);
     if (null == person) {
-      responsePersonNotFound(resp, name);
-      return;
+      responsePersonNotFound(name);
     }
-    response(resp, 200, person);
+    return person;
   }
 
-  private void response(HttpServletResponse resp, int statusCode, Object respBody) throws IOException {
-    resp.setStatus(statusCode);
-    resp.setContentType("application/json");
-    PrintWriter writer = resp.getWriter();
-    writer.print(getObjectMapper().writeValueAsString(respBody));
-  }
-
-  private boolean isInvalidPath(HttpServletRequest req) {
-    return !"/person".equals(req.getPathInfo());
-  }
-
-  private void responsePersonNotFound(HttpServletResponse resp, String name) throws IOException {
-    response404(resp, "there is no person named " + name);
-  }
-
-  private void responseUnknownPath(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    response404(resp, "unknown path: " + req.getPathInfo());
-  }
-
-  private void response404(HttpServletResponse resp, String msg) throws IOException {
-    response(resp, 404, new CommonResponse(msg));
-  }
-
-  private AbstractRestObjectMapper getObjectMapper() {
-    return RestObjectMapperFactory.getRestObjectMapper();
+  private void responsePersonNotFound(String name) {
+    throw new InvocationException(Status.NOT_FOUND, new CommonResponse("there is no person named " + name));
   }
 }
