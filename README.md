@@ -1,8 +1,10 @@
 # SpringBoot2 接入CSE（ServiceComb）示例
 
-操作步骤参考本分支的commit记录。
+基于`SpringBoot2-with-embededTomcat-starterParent`分支，修改内容：
+- 升级CSEJavaSDK版本使之支持SpringBoot-2.2.0
+- 增加servlet改造为REST接口的实例
 
-适用于SpringBoot 2.0.3.RELEASE - 2.0.8.RELEASE。
+操作步骤参考本分支的commit记录。
 
 参考资料：
 - [https://huaweicse.github.io/cse-java-chassis-doc/using-cse-in-spring-boot/using-cse-in-spring-boot.html](https://huaweicse.github.io/cse-java-chassis-doc/using-cse-in-spring-boot/using-cse-in-spring-boot.html)
